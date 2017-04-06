@@ -29,9 +29,11 @@ drone.connect(function() {
         //tilt(roll), forward(pitch),  turn(yaw), up(altitude)
 
         setTimeout(clearInterval, 15000, setInterval(function() {drone.frontFlip();}, 3000));
+        drone.flatTrim();
 
         for(var i = 0; i < 3; i++) {
                         setTimeout(function() {drone.backFlip();}, 3000);
+                        drone.flatTrim();
         }
 
         setTimeout(function() {drone.rightFlip();}, 3000);
