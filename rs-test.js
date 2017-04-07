@@ -1,18 +1,42 @@
-"use strict";
+'use strict';
+
 var RollingSpider = require('rolling-spider');
+var temporal = require('temporal');
 var drone = new RollingSpider();
 
-var STEPS = 20;
-
 drone.connect(function() {
-    drone.setup(function() {
-        drone.flatTrim();
-        drone.startPing();
-        drone.flatTrim();
-        setTimeout(function() {drone.takeOff();}, 3000);
-        setTimeout(function() {drone.hover();}, 3000);
+  drone.setup(function() {
+    drone.flatTrim();
+    drone.startPing();
+    drone.flatTrim();
 
-        setTimeout(function() {drone.land();}, 3000);
-        setTimeout(function() {drone.disconnect(); process.exit(0);}, 3000);
-    });
+    temporal.queue([
+      {
+        delay: 5000,
+        task: function () {
+          drone.takeOff();
+          drone.flatTrim();
+        }
+      },
+      {
+        delay: 3000,
+        task: function () {
+          drone.forward({steps: 12});
+        }
+      },
+      {
+        delay: 5000,
+        task: function () {
+          drone.land();
+        }
+      },
+      {
+        delay: 5000,
+        task: function () {
+          temporal.clear();
+          process.exit(0);
+        }
+      }
+    ]);
+  });
 });

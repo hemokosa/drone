@@ -1,45 +1,40 @@
-"use strict";
+'use strict';
+
 var RollingSpider = require('rolling-spider');
+var temporal = require('temporal');
 var drone = new RollingSpider();
 
-var SPEED = 20;
-var STEPS = 20;
+var SPEED = 30;
+var STEPS = 40;
 
 drone.connect(function() {
-    drone.setup(function() {
-        drone.flatTrim();
-        drone.startPing();
-        drone.flatTrim();
-        setTimeout(function() {drone.takeOff();}, 3000);
-        setTimeout(function() {drone.hover();}, 3000);
+  drone.setup(function() {
+    drone.flatTrim();
+    drone.startPing();
+    drone.flatTrim();
 
-        setTimeout(function() {drone.up({speed: SPEED, steps: STEPS});}, 3000);
-        setTimeout(function() {drone.down({speed: SPEED, steps: STEPS});}, 3000);
-
-        setTimeout(function() {drone.tiltRight({speed: SPEED, steps: STEPS});}, 3000);
-        setTimeout(function() {drone.tiltLeft({speed: SPEED, steps: STEPS});}, 3000);
-
-        setTimeout(function() {drone.forward({speed: SPEED, steps: STEPS});}, 3000);
-        setTimeout(function() {drone.backward({speed: SPEED, steps: STEPS});}, 3000);
-
-        setTimeout(function() {drone.turnRight({speed: SPEED, steps: 100});}, 3000);
-        setTimeout(function() {drone.turnLeft({speed: SPEED, steps: 100});}, 3000);
-
-        setTimeout(function() {param.turn = 360; drone.drive(param, STEPS);}, 5000);
-        //tilt(roll), forward(pitch),  turn(yaw), up(altitude)
-
-        setTimeout(clearInterval, 15000, setInterval(function() {drone.frontFlip();}, 3000));
-        drone.flatTrim();
-
-        for(var i = 0; i < 3; i++) {
-                        setTimeout(function() {drone.backFlip();}, 3000);
-                        drone.flatTrim();
-        }
-
-        setTimeout(function() {drone.rightFlip();}, 3000);
-        setTimeout(function() {drone.leftFlip();}, 3000);
-
-        setTimeout(function() {drone.land();}, 3000);
-        setTimeout(function() {drone.disconnect(); process.exit(0);}, 3000);
-    });
+    temporal.queue([
+      {delay: 3000, task: function () {drone.takeOff(); drone.flatTrim();}},
+      {delay: 3000, task: function () {drone.forward({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.backward({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.left({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.right({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.tiltLeft({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.tiltRight({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.up({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.down({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.clockwise({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.turnLeft({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.counterClockwise({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.turnRight({speed: SPEED, steps: STEPS});}},
+      {delay: 3000, task: function () {drone.flatTrim();}},
+      {delay: 3000, task: function () {drone.backFlip();}},
+      {delay: 3000, task: function () {drone.frontFlip();}},
+      {delay: 3000, task: function () {drone.land();}},
+      {delay: 3000, task: function () {temporal.clear(); process.exit(0);}}
+    ]);
+  });
 });
+
+setTimeout(function() {drone.up({speed: SPEED, steps: STEPS});}, 3000);
+setTimeout(function() {drone.down({speed: SPEED, steps: STEPS});}, 3000);
